@@ -5,6 +5,7 @@ import { config } from "../config.js";
 import { asyncHandler } from "../handler/asyncHandler.js";
 import { ErrorGenerator } from "../generator/errorGenerator.js";
 import { handleResponse } from "../handler/responseHandler.js";
+import { getStaredRepo, verifyGitUserName } from "./git.js";
 
 const createToken = (user) => {
   return jwt.sign({ email: user?.email, id: user._id }, config.SECRET_KEY);
@@ -14,19 +15,34 @@ export const signup = asyncHandler(async (req, res) => {
   let input = req.body;
 
   const match = await modals.User.findOne({
-    $or: [{ email: input.email }, { contactNo: input.contactNo }],
+    $or: [
+      { email: input.email },
+      { contactNo: input.contactNo },
+      { gitUserName: input.gitUserName },
+    ],
   });
 
-  if (match) throw new ErrorGenerator(400, "email or password are used");
+  let msg = "email or password are used";
+  if (match?.gitUserName === input?.gitUserName) msg = "git account are used";
+  if (match) throw new ErrorGenerator(400, msg);
+
+  let isVerify = await verifyGitUserName(input?.gitUserName);
+
+  if (!isVerify) throw new ErrorGenerator(400, "Git username are not valid");
 
   let user = await modals.User.create(input);
 
-  res.cookie("accessToken", createToken(user), {
-    maxAge: new Date(Date.now() + 3600000),
-    // httpOnly: true,
-  });
+  const staredRepo = await getStaredRepo(user.gitUserName);
 
-  handleResponse(user, res, "User create successfully");
+  handleResponse(
+    {
+      data: user,
+      token: createToken(user),
+      staredRepo,
+    },
+    res,
+    "User create successfully"
+  );
 });
 
 export const signin = asyncHandler(async (req, res) => {
@@ -41,15 +57,16 @@ export const signin = asyncHandler(async (req, res) => {
   let match = await matchUser.validatePassword(password);
 
   if (!match) throw new ErrorGenerator(400, "Email of password not match");
-  res.cookie("accessToken", createToken(matchUser), {
-    maxAge: new Date(Date.now() + 3600000),
-    // httpOnly: true,
-  });
-  handleResponse(matchUser, res, "User signin successfully");
-});
 
-export const logout = asyncHandler(async (req, res) => {
-  res.clearCookie("user");
-  res.clearCookie("accessToken");
-  handleResponse(null, res, "User logout successfully");
+  const staredRepo = await getStaredRepo(matchUser?.gitUserName);
+
+  handleResponse(
+    {
+      data: matchUser,
+      token: createToken(matchUser),
+      staredRepo: staredRepo,
+    },
+    res,
+    "User signin successfully"
+  );
 });

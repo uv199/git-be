@@ -39,6 +39,10 @@ const userSchema = mongoose.Schema(
         message: "Please provide a strong password",
       },
     },
+    gitUserName: {
+      type: String,
+      required: [true, "Please provide git user name"],
+    },
   },
   { timestamps: true }
 );
@@ -67,4 +71,3 @@ userSchema.methods.toJSON = function () {
 };
 
 export const User = mongoose.model("User", userSchema);
-

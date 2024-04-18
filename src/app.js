@@ -1,9 +1,9 @@
 import express from "express";
-import userRouter from "./router/user.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { errorHandler } from "./handler/errorHandler.js";
-import { signin } from "./controller/user.js";
+import userRouter from "./router/user.js";
+import gitRouter from "./router/git.js";
 
 const app = express();
 
@@ -19,6 +19,7 @@ app.use(
 app.use(express.json());
 
 app.use("/user", userRouter);
+app.use("/git", gitRouter);
 
 app.use(errorHandler);
 

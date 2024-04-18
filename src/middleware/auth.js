@@ -5,7 +5,7 @@ import { modals } from "../models/index.js";
 
 export const auth = async (req, res, next) => {
   try {
-    let token = req?.cookies?.accessToken;
+    let token = req?.headers?.["x-token"];
     if (!token) throw new ErrorGenerator(500, "Session invalid or expire");
     else {
       let data = jwt.verify(token, config.SECRET_KEY);

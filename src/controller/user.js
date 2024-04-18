@@ -21,14 +21,12 @@ export const signup = asyncHandler(async (req, res) => {
 
   let user = await modals.User.create(input);
 
-  res.cookie("accessToken", createToken(user));
+  res.cookie("accessToken", createToken(user), {
+    maxAge: new Date(Date.now() + 3600000),
+    // httpOnly: true,
+  });
 
   handleResponse(user, res, "User create successfully");
-});
-export const logout = asyncHandler(async (req, res) => {
-  // res.clearCookie("accessToken");
-  res.clearCookie("user");
-  handleResponse(null, res, "User create successfully");
 });
 
 export const signin = asyncHandler(async (req, res) => {
@@ -43,6 +41,15 @@ export const signin = asyncHandler(async (req, res) => {
   let match = await matchUser.validatePassword(password);
 
   if (!match) throw new ErrorGenerator(400, "Email of password not match");
-  res.cookie("accessToken", createToken(matchUser));
+  res.cookie("accessToken", createToken(matchUser), {
+    maxAge: new Date(Date.now() + 3600000),
+    // httpOnly: true,
+  });
   handleResponse(matchUser, res, "User signin successfully");
+});
+
+export const logout = asyncHandler(async (req, res) => {
+  res.clearCookie("user");
+  res.clearCookie("accessToken");
+  handleResponse(null, res, "User logout successfully");
 });

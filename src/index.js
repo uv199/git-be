@@ -1,10 +1,7 @@
-import dotenv from "dotenv";
-
+import "dotenv/config";
 import app from "./app.js";
 import { config } from "./config.js";
 import { dbConnect } from "./db/db.js";
-
-dotenv.config();
 
 const port = config.PORT;
 // process.on("uncaughtException", (error) => {

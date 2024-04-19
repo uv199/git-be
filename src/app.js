@@ -17,6 +17,9 @@ app.use(
 );
 
 app.use(express.json());
+app.use("/", (req, res) => {
+  res.send("Server is live");
+});
 
 app.use("/user", userRouter);
 app.use("/git", gitRouter);

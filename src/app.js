@@ -11,15 +11,12 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "https://exquisite-starlight-41e74c.netlify.app/",
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
 
 app.use(express.json());
-app.use("/", (req, res) => {
-  res.send("Server is live");
-});
 
 app.use("/user", userRouter);
 app.use("/git", gitRouter);

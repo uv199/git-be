@@ -32,13 +32,10 @@ export const signup = asyncHandler(async (req, res) => {
 
   let user = await modals.User.create(input);
 
-  const staredRepo = await getStaredRepo(user.gitUserName);
-
   handleResponse(
     {
       data: user,
       token: createToken(user),
-      staredRepo,
     },
     res,
     "User create successfully"
@@ -58,13 +55,16 @@ export const signin = asyncHandler(async (req, res) => {
 
   if (!match) throw new ErrorGenerator(400, "Email of password not match");
 
-  const staredRepo = await getStaredRepo(matchUser?.gitUserName);
+  const staredRepo = await modals.StarRepo.find(
+    { userId: matchUser._id },
+    { repoId: -1 }
+  );
 
   handleResponse(
     {
       data: matchUser,
       token: createToken(matchUser),
-      staredRepo: staredRepo,
+      staredRepo: staredRepo?.map?.((e) => e?.repoId),
     },
     res,
     "User signin successfully"

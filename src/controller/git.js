@@ -63,7 +63,6 @@ export const getUserRepository = asyncHandler(async (req, res) => {
 
 export const getSearchListRepository = asyncHandler(async (req, res) => {
   let input = req.query.search;
-  console.log("-----------  input----------->", input)
 
   let data = await octokit.request(`GET /search/users?q=${input}`, {
     headers: {
@@ -71,7 +70,6 @@ export const getSearchListRepository = asyncHandler(async (req, res) => {
     },
   });
   let nameArr = data?.data?.items.map((e) => e?.login);
-  console.log("-----------  nameArr----------->", nameArr)
 
   handleResponse(nameArr, res, "Get user successfully");
 });

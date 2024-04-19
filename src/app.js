@@ -11,7 +11,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "*",
+    origin: "https://exquisite-starlight-41e74c.netlify.app/",
     credentials: true,
   })
 );

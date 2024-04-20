@@ -4,12 +4,13 @@ import { modals } from "../models/index.js";
 
 export const starHandler = asyncHandler(async (req, res) => {
   let input = req.body;
+  console.log("-----------  input----------->", input)
   input.userId = req?.me?._id;
   let data = null;
   if (input?.isStared) {
     data = await modals.StarRepo.findOneAndDelete({
       userId: input.userId,
-      starId: input?.starId,
+      repoId: input?.repoId,
     });
   } else {
     data = await modals.StarRepo.create(input);
